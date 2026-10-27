@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<title>PikselDünyası🇹🇷</title>
+<style>
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);--bar:#1b1f2a;--ink:#fff}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:#0b3a66;font-family:system-ui,Arial,sans-serif;overflow:hidden;touch-action:none;color:var(--ink)}
+#c{position:fixed;inset:0;width:100%;height:100%}
+.row{position:fixed;left:8px;right:8px;display:flex;gap:8px;align-items:center;font-size:14px}
+.row>*{background:var(--bar);border-radius:8px;color:var(--ink);border:0}
+#top{top:calc(env(safe-area-inset-top,0px) + 8px)}
+#tools{top:calc(env(safe-area-inset-top,0px) + 58px)}
+.row button{padding:8px 12px;font-size:15px}
+#timer{flex:1;padding:6px 12px;position:relative;overflow:hidden}
+#timer b{font-size:22px;font-variant-numeric:tabular-nums}
+#rate{font-size:12px;opacity:.7;margin-left:6px}
+#bar{position:absolute;left:0;bottom:0;height:4px;background:#ff9800;width:0}
+.plus{position:absolute;right:10px;top:6px;color:#ff3b30;font-weight:900;font-size:15px;pointer-events:none;animation:up .9s forwards}
+@keyframes up{from{opacity:1;transform:translateY(10px)}to{opacity:0;transform:translateY(-14px)}}
+#info{padding:8px 10px;max-width:110px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+button.on{background:#e50000!important}
+#pal{position:fixed;left:0;right:0;bottom:0;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:var(--bar);display:grid;grid-template-rows:repeat(2,34px);grid-auto-flow:column;grid-auto-columns:34px;gap:6px;overflow-x:auto;touch-action:pan-x}
+#pal b{width:34px;height:34px;border-radius:6px;border:3px solid transparent}
+#pal b.on{border-color:#fff}
+#bn{position:fixed;left:50%;top:110px;transform:translateX(-50%);max-width:92%;padding:10px 14px;border-radius:12px;font-weight:800;text-align:center;display:none;z-index:30;color:#fff;background:#d50000;box-shadow:0 4px 18px #000a}
+.pop{position:fixed;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:#e50000;border:3px solid #fff;display:flex;align-items:center;justify-content:center;font-size:26px;z-index:29;pointer-events:none;animation:pp 1.1s forwards}
+@keyframes pp{0%{transform:scale(.3);opacity:1}30%{transform:scale(1.3)}100%{transform:scale(1);opacity:0}}
+.ov{position:fixed;inset:0;background:#000b;display:none;align-items:center;justify-content:center;z-index:40;touch-action:auto}
+.card{background:#1b1f2a;padding:20px;border-radius:14px;width:min(320px,88%);text-align:center}
+.card input{width:100%;font-size:16px;padding:10px;margin:6px 0;border-radius:8px;border:0}
+.card button{padding:10px 16px;margin:4px;border:0;border-radius:8px;font-size:15px;background:#1976d2;color:#fff}
+.card button.g{background:#444}
+#lerr{color:#ff8a80;min-height:20px;font-size:13px}
+</style></head><body>
+<canvas id="c"></canvas>
+<div class="row" id="top"><div id="timer">⏳ <b id="tm">0:00</b> / 5:00<span id="rate"></span><div id="bar"></div></div><div id="info">...</div><button id="zi">＋</button><button id="zo">－</button></div>
+<div class="row" id="tools"><button id="pen">✏️ Kalem</button></div>
+<div id="bn"></div>
+<div id="pal"></div>
+<div class="ov" id="load" style="display:flex;z-index:60"><div class="card"><h2 style="margin:0 0 8px">PikselDünyası🇹🇷<br><small>Harita yükleniyor</small></h2><div id="lp" style="font-size:22px">0%</div><div id="lerr2" style="color:#ff8a80;font-size:13px;margin-top:8px"></div></div></div>
+<div class="ov" id="login"><div class="card"><h2 style="margin:0 0 8px">PikselDünyası🇹🇷</h2><input id="sv" placeholder="Sunucu adresi (örn: https://site.com)"><div id="lerr"></div><button id="bl">Başla</button><br><button id="bo" class="g">📴 Çevrimdışı oyna (sadece ben)</button></div></div>
+<script>
+(function(){
+var land=[
+[[-168,66],[-162,66],[-166,68.5],[-156,71.3],[-141,69.6],[-128,70],[-115,68],[-108,68],[-96,68],[-94,71.5],[-90,69],[-86,68],[-82,69.5],[-81,67],[-86,66],[-88,64],[-94,61.5],[-93,59],[-88,57],[-82,55],[-82,52.5],[-79,51.5],[-79,55],[-77,58],[-78,62],[-72,61.5],[-69,59],[-65,60.5],[-62,57.5],[-58,54],[-56,52],[-60,50.3],[-66,50],[-70,47.5],[-65,49],[-64.5,47],[-61,46],[-66,44],[-70,43.5],[-70.5,41.8],[-74,40.5],[-75.5,38],[-76,35.5],[-78,34],[-81,31.5],[-80,27],[-80.5,25.2],[-82,26.5],[-82.8,29],[-84,30],[-86.5,30.4],[-89,30.2],[-90,29.2],[-93,29.6],[-95,29],[-97.2,27.5],[-97.5,25],[-97.7,22],[-96,19],[-94.5,18.2],[-91.5,18.5],[-90.5,21],[-87,21.5],[-87.5,18.5],[-88.5,16],[-84,15.8],[-83.3,12],[-83.5,10.5],[-82,9],[-79.5,9.5],[-77.5,8.5],[-77.3,7.5],[-78.2,8.2],[-80,7.3],[-81.5,8],[-83.5,8.7],[-85.8,10.5],[-87.5,13],[-91,14],[-94,16],[-96,15.7],[-100,17],[-105.5,20],[-105.5,22.5],[-109,25.5],[-112.5,29.5],[-114.7,31.5],[-114.5,30],[-112.8,27.5],[-110,23.2],[-109.5,23],[-112,25],[-114.5,28],[-115.5,29.8],[-117.2,32.5],[-118.5,34],[-121,34.8],[-122.5,37.5],[-124,40.3],[-124,46.5],[-124.7,48.3],[-123,49],[-127,51],[-130,54],[-133,57],[-136,58.5],[-140,59.8],[-144,60],[-148,60.5],[-152,59],[-154,57.5],[-158,56.5],[-162,55],[-165,54.5],[-160,56.5],[-157.5,58.7],[-162,58.5],[-165,60.5],[-165.5,62.5],[-162,63.5],[-166,64.5]],
+[[-73,78.5],[-60,82],[-40,83.5],[-20,82],[-18,76],[-22,70.5],[-30,68],[-40,65],[-43,60],[-47,61],[-50,64],[-53,67],[-55,70],[-58,75.5],[-68,76.5]],
+[[-85,73.5],[-72,71.5],[-66,68],[-62,66.5],[-65,63],[-72,63],[-78,64.8],[-74,67.5],[-84,69.5]],
+[[-118,72.5],[-105,73],[-100,71],[-102,69],[-117,69.5]],[[-92,76.5],[-85,80],[-62,82.5],[-75,78]],
+[[-59,47.5],[-53,46.7],[-52.7,48.5],[-55.5,51.5],[-58,50]],[[-85,22],[-80,23],[-74,20],[-77.5,19.8],[-82,22.5]],[[-74.4,18.5],[-68.4,18.5],[-70,19.8],[-73,19.8]],
+[[-77.3,8],[-76,10],[-72,12],[-71,11],[-68,10.5],[-62,10.5],[-60,8.5],[-57,6],[-52,5],[-50,1.5],[-48,-1],[-44,-2.5],[-40,-3],[-35,-5.5],[-35,-9],[-37,-12],[-39,-15],[-40,-20],[-42,-23],[-45,-23.7],[-48,-26],[-48.7,-28.5],[-52,-33],[-54,-34.7],[-57,-34.5],[-58.5,-35],[-57,-37.5],[-62,-39],[-63,-41],[-65,-42],[-64.5,-45],[-67.5,-46.5],[-66,-48],[-68.5,-50.2],[-68.5,-52.3],[-70,-53.7],[-72,-53.3],[-74,-52],[-75.5,-48],[-74,-44],[-73.5,-40],[-72,-35],[-71.5,-30],[-70.5,-24],[-70.3,-18.5],[-75,-15],[-76.5,-13],[-79,-8],[-81,-5],[-80,-2],[-80.5,-0.5],[-79.8,1.5],[-78,3],[-77.5,6]],
+[[-68.6,-52.7],[-65,-54.8],[-66.5,-55],[-68.5,-54.9],[-71,-54.2],[-70,-53.6]],
+[[-17,21],[-16,24],[-13,27.5],[-9.7,29.8],[-9.8,31.5],[-6.5,34],[-5.5,35.8],[-2,35.1],[3,36.8],[10,37.2],[11,35],[10,33.5],[15,32.3],[19,30.3],[20,32],[23,32.7],[30,31.2],[34.2,31.3],[34.9,29.5],[34,27.8],[35.5,24],[37.2,19],[39,15.5],[43,12.7],[43.2,11.8],[44.5,10.4],[51,11.8],[51,10.4],[48,5],[45,2],[41.5,-1.5],[40,-3],[39,-6],[39.5,-10],[40.5,-15],[35,-20],[35.5,-24],[32.8,-26],[32.3,-28.5],[30,-31.5],[27,-33.6],[22,-34.2],[20,-34.8],[18.4,-34],[18,-31.5],[16,-28.5],[14.5,-22.5],[12,-17.5],[13.5,-12],[13.5,-8.7],[12.2,-6],[9,-1],[9.5,3.5],[8.7,4.5],[5,5.8],[2,6.3],[-2,4.8],[-7.5,4.4],[-10,6],[-13,8],[-15,10.8],[-17,14.7],[-16.5,18]],
+[[-9,37],[-8.8,38.7],[-9.5,39.5],[-8.8,42],[-9.3,43.2],[-8,43.7],[-1.5,43.5],[-1.2,46],[-4.5,47.8],[-1.5,48.7],[1.5,50],[3.5,51.3],[5,53.2],[8.5,53.7],[8.5,57],[10.5,57.7],[10.5,56],[9.8,54.8],[12,54],[14,54],[18.8,54.5],[21,55],[21,57],[24,57.2],[24,59.3],[28,59.5],[30,60],[29,60.5],[23,60],[21.5,61],[21.5,63],[25,65],[22,65.8],[17.5,62.5],[17,61],[19,60],[16.5,57],[14,55.5],[12.5,56.3],[11,59],[8,58],[5.5,59],[5,62],[8,63.5],[13,66],[16,68.5],[20,70],[25,71],[31,70.2],[41,68],[44,68.5],[53,68.5],[60,69.5],[68,69],[68,72],[73,72.5],[75,68.5],[78,72],[82,73.5],[87,75],[100,76.5],[104,77.7],[113,73.7],[121,73],[129,71.2],[140,72.5],[150,71.5],[160,69.7],[170,70],[180,68.8],[180,65],[177,64.7],[179,62.5],[172,60.5],[163,60],[162,57.7],[160,53],[156.7,51],[156,57],[160,60.3],[154,59.2],[143,59.3],[137,54],[141,53],[140,48],[135,43.5],[131,42.6],[129.7,41],[128,38.5],[129.4,36],[126.5,34.5],[126.5,37.8],[125,39.6],[122,40.5],[121.5,39],[118,39],[119,37.2],[122.5,37],[121,34.5],[121.8,31.5],[121.8,29.5],[119.5,26],[116.5,23],[113,22.2],[110.5,21],[108.5,21.6],[106.5,19.5],[108.5,15],[109.3,12],[107,10.4],[105,8.7],[104.8,10.3],[103,10.7],[100.8,13.2],[99.5,10],[100.3,7],[102.2,6],[103.5,4],[104.2,1.4],[101.3,2.8],[100.2,6.5],[98.5,8],[98.4,12],[97.5,16.8],[94.4,16],[93.8,19.5],[92,21.5],[90.5,22.5],[88,21.5],[86.5,20],[84.5,18.5],[82,16.5],[80.2,15.5],[80.2,12.5],[79.8,10.3],[78.2,8.8],[77.5,8.1],[76.2,10.2],[74.8,13],[73.5,16.5],[72.8,19.5],[72.6,21.5],[70,20.8],[68.8,22.4],[70.5,23],[68.5,23.6],[66.5,25.3],[61.5,25.2],[57,25.7],[56.5,27],[54,26.6],[51,28.5],[50,30.2],[48.5,30],[47.8,29.5],[48.5,28],[50,26.2],[51.2,24.6],[54,24.2],[56,26],[56.5,24.3],[58,23.5],[59.8,22.3],[58.5,20],[55,17.2],[52,16],[49,14.2],[45,12.8],[43.2,12.8],[42.6,15],[40.5,19],[38.5,22],[36.2,25.8],[35,28.5],[34.9,29.5],[34.5,31.3],[35.2,33.5],[36,35.8],[35.8,36.8],[34,36.2],[32.5,36.1],[30.5,36.6],[28.5,36.7],[27.2,37.8],[26.3,39.3],[26.5,40.3],[29,41],[26.2,40.8],[24,40.7],[23,40.3],[23.5,38],[22.8,36.5],[21.5,36.8],[21,38.3],[20.2,39.5],[19.4,41.8],[18.5,42.5],[16,43.5],[13.5,45.2],[12.3,44.8],[12.5,43.6],[14,42.2],[16,41.9],[18.5,40.2],[16.5,38.5],[15.7,38],[15.8,40],[14.3,40.8],[12,41.5],[10.5,43],[8.8,44.4],[6.5,43.2],[3.5,43.3],[3.2,42],[0.8,41],[-0.3,39.5],[-0.8,37.7],[-2.2,36.7],[-5.3,36.1],[-6.3,36.8]],
+[[12.5,38],[15.6,38.2],[15,36.7]],[[8.2,41],[9.7,41],[9.5,39],[8.5,39]],[[23.5,35.4],[26.2,35.2],[24,35.2]],[[32.3,35],[34.5,35.6],[33,34.6]],
+[[-5.7,50],[1.3,51.2],[1.7,52.7],[0,53.5],[-1.5,55.5],[-2,57.6],[-3.5,58.6],[-5.3,58.5],[-6,56.5],[-4.8,55],[-3.1,54.8],[-3,53.4],[-4.5,53.3],[-5,51.8]],
+[[-10.3,51.8],[-6,52],[-6,54],[-6.5,55.2],[-8,55.3],[-10,54]],
+[[-24,64.5],[-22,63.8],[-18,63.5],[-14.5,64.5],[-14.5,66],[-18,66.5],[-22.5,66.4]],
+[[12,78],[18,80.2],[28,80],[22,77]],[[52,71],[57,75],[68,77],[60,73],[55,70.5]],
+[[130,31],[132,33.5],[135,34.5],[137,34.7],[140,35],[141,38],[142,40],[141,41.4],[139.8,39.5],[139,37.5],[136.7,37],[133,35.5],[131,34.5]],[[140,42],[145,43.3],[143,45.4],[141.5,45]],
+[[142,46],[143.3,49],[142.7,54],[142,50]],[[120.2,23],[121.8,25],[121,22]],[[108.7,19],[111,20],[110,18.2]],[[79.8,9.5],[81.8,7.5],[80.5,6],[79.8,7.5]],
+[[95.3,5.6],[98,4],[100.5,2],[104,-1],[106,-3],[105.8,-5.8],[104.5,-5.8],[101,-3],[98.5,0.5],[95.5,3]],
+[[105.3,-6.8],[108,-6.3],[114.5,-7.7],[114.4,-8.7],[108,-7.8],[105.5,-7]],
+[[109,1.5],[111,2],[114,4.5],[117,7],[119,5.2],[117.5,1],[118,-1],[116.2,-3.8],[114.5,-4],[111.5,-3.2],[110,-1.5]],
+[[119.5,-5.5],[119.3,-1],[120,1],[125,1.5],[122,-0.5],[123,-4],[121,-3.5],[121,-5]],
+[[131,-0.8],[135,-3.3],[138,-1.8],[141,-2.6],[145,-4.5],[147.5,-6],[150,-10.2],[147,-10],[143.5,-9],[141,-9.1],[138,-8.3],[137.5,-5],[133,-4],[132,-2.5]],
+[[120,18.3],[122.2,18.3],[122,16],[124,13],[121,14]],[[122,7],[126.5,8],[126,6],[123,6.8]],[[124,-9.5],[127,-8.5],[125,-9.3]],
+[[113.5,-22],[114.5,-26],[113.3,-26.2],[115,-30],[115,-34.3],[118,-35],[123.5,-34],[126,-32.2],[131,-31.5],[134,-32.7],[135.7,-34.8],[137.8,-32.8],[138,-35.5],[140,-37.8],[144,-38.5],[146.5,-39],[150,-37.5],[151,-34],[153,-30],[153.5,-27],[152,-24.5],[149,-21],[146,-18.5],[145.5,-15],[143.5,-14],[142.5,-10.7],[141.5,-13.5],[141.7,-17],[139.5,-17.5],[136.5,-15.7],[135.5,-14.7],[137,-12.2],[131,-11.5],[129.5,-14.8],[127.5,-14],[125,-15],[123.5,-17],[121,-19],[118,-20.5],[116,-20.8]],
+[[144.5,-41],[148.3,-41],[147.5,-43.2],[146,-43.5]],
+[[172.7,-34.5],[175,-36.5],[178,-37.7],[177,-39.5],[175,-41.5],[174.5,-39.5],[173.8,-35.5]],
+[[172.7,-40.5],[174.3,-41.7],[173,-43.8],[171,-45],[169,-46.6],[166.5,-46],[168.5,-44],[171,-42.5]],
+[[49.3,-12],[50.5,-15.5],[49.5,-19.5],[47,-25],[45,-25.5],[43.5,-22],[44.5,-16.5],[47,-15]],
+[[-180,-90],[180,-90],[180,-74],[160,-70.5],[145,-67],[135,-66],[120,-67],[100,-66.5],[80,-68],[70,-68],[55,-66],[40,-69],[20,-70],[0,-70],[-15,-72],[-30,-78],[-45,-78],[-60,-74],[-60,-65],[-65,-67],[-72,-72],[-90,-73],[-110,-74],[-130,-75],[-150,-77],[-165,-78],[-180,-74]]];
+var water=[[[28,41.5],[28.5,44],[30,46],[33,46],[33.5,45],[36,45.2],[38,47],[41,41.5],[36,41.5],[31,41]],
+[[47,45],[50,46.5],[53,45.5],[53.5,41],[54,37],[49,37],[48.5,40],[47,43]],
+[[-92,46.8],[-88,48.5],[-84.5,46.5],[-87,46.5]],[[-87.8,42],[-87,45.8],[-85.5,45.5],[-86.5,42]],[[-84.5,46],[-82,45.3],[-82.5,43.2],[-83.8,44]],
+[[32,-0.5],[34,0],[34,-2.5],[32,-2.5]],[[22,43.5],[22,46],[26,46],[26,43.5]].slice(0,0)];
+
+function chaikin(p){var r=[];for(var i=0;i<p.length;i++){var a=p[i],b=p[(i+1)%p.length];r.push([.75*a[0]+.25*b[0],.75*a[1]+.25*b[1]],[.25*a[0]+.75*b[0],.25*a[1]+.75*b[1]]);}return r;}
+function fill(m,p,NX,NY,v){
+  var pts=p.map(function(q){return[(q[0]+180)/360*NX,(90-q[1])/180*NY];}),n=pts.length,y0=1e9,y1=-1e9,i;
+  for(i=0;i<n;i++){if(pts[i][1]<y0)y0=pts[i][1];if(pts[i][1]>y1)y1=pts[i][1];}
+  for(var y=Math.max(0,Math.floor(y0));y<=Math.min(NY-1,Math.ceil(y1));y++){
+    var yc=y+.5,xs=[];
+    for(i=0;i<n;i++){var a=pts[i],b=pts[(i+1)%n];if((a[1]<=yc&&b[1]>yc)||(b[1]<=yc&&a[1]>yc))xs.push(a[0]+(yc-a[1])/(b[1]-a[1])*(b[0]-a[0]));}
+    xs.sort(function(a,b){return a-b;});
+    for(var k=0;k+1<xs.length;k+=2){var xa=Math.max(0,Math.ceil(xs[k]-.5)),xb=Math.min(NX-1,Math.floor(xs[k+1]-.5));for(var x=xa;x<=xb;x++)m[y*NX+x]=v;}
+  }
+}
+function build(NX,NY){var m=new Uint8Array(NX*NY);
+  land.forEach(function(p,i){fill(m,i<land.length-1?chaikin(p):p,NX,NY,1);});
+  water.forEach(function(p){if(p.length)fill(m,chaikin(p),NX,NY,0);});
+  return m;}
+var G={build:build};
+if(typeof module!=='undefined'&&module.exports)module.exports=G;else window.GEO=G;
+})();
+
+</script>
+<script>
+var NX=2880,NY=1440,MAX=300,ADD=10;
+var cols=['#ffffff','#e4e4e4','#888888','#222222','#ffa7d1','#e50000','#e59500','#a06a42','#e5d900','#94e044','#02be01','#00d3dd','#0083c7','#0000ea','#cf6ee4','#820080','#000000','#5c5c5c','#b0b0b0','#ff5c8a','#9b0033','#ff6a00','#ffc27a','#6d4c2f','#fff176','#c6ff00','#1b5e20','#7fffd4','#4fc3f7','#1a237e','#b39ddb','#ff00ff'];
+var $=function(i){return document.getElementById(i)};
+var isL,o=document.createElement('canvas'),og,img,d32;
+o.width=NX;o.height=NY;og=o.getContext('2d');
+function inb(lo,la,a,b,c,d){return lo>=a&&lo<=b&&la>=c&&la<=d;}
+function hash(x,y){var h=(x*374761393+y*668265263)^(x*y);h=(h^(h>>>13))*1274126177;return((h^(h>>>16))&255)/255;}
+function cl(v){return v<0?0:v>255?255:v|0;}
+function rgb(r,g,b){return(255<<24)|(cl(b)<<16)|(cl(g)<<8)|cl(r);}
+function genBase(done){
+  isL=GEO.build(NX,NY);img=og.createImageData(NX,NY);d32=new Uint32Array(img.data.buffer);
+  var cSh=rgb(47,134,200),cMid=rgb(31,112,178),cOc=rgb(15,90,156),cDp=rgb(11,74,133),y=0;
+  function chunk(){
+    var end=Math.min(NY,y+40);
+    for(;y<end;y++){var la=90-(y+.5)/NY*180;for(var x=0;x<NX;x++){
+      var i=y*NX+x,lo=(x+.5)/NX*360-180,r,g,b;
+      if(isL[i]){
+        var n=(hash(x>>2,y>>2)-.5)*22;
+        if(la<-68||la>72||(la>59&&lo>-75&&lo<-12)){r=236;g=243;b=248;}
+        else if(inb(lo,la,-17,36,15,30)||inb(lo,la,36,57,16,29)||inb(lo,la,50,66,26,37)||inb(lo,la,88,112,37,46)||inb(lo,la,122,140,-31,-20)||inb(lo,la,15,25,-27,-20)||inb(lo,la,-114,-104,25,33)){r=216;g=192;b=128;}
+        else if(inb(lo,la,74,100,28,37)||inb(lo,la,-72,-66,-40,-15)||inb(lo,la,-125,-105,36,52)){r=142;g=128;b=108;}
+        else if(Math.abs(la)<12){r=34;g=120;b=52;}else if(la>52){r=58;g=112;b=72;}else if(Math.abs(la)<30){r=98;g=152;b=64;}else{r=112;g=160;b=78;}
+        d32[i]=rgb(r+n,g+n,b+n);
+      }else{
+        var near=0;for(var k=1;k<=3&&!near;k++){if((x>=k&&isL[i-k])||(x<NX-k&&isL[i+k])||(y>=k&&isL[i-k*NX])||(y<NY-k&&isL[i+k*NX]))near=k;}
+        d32[i]=near==1?cSh:near>1?cMid:(Math.abs(la)<60?cOc:cDp);
+      }}}
+    $('lp').textContent=Math.round(y/NY*100)+'%';
+    if(y<NY)setTimeout(chunk,0);else{og.putImageData(img,0,0);done();}
+  }
+  chunk();
+}
+function fatal(t){$('load').style.display='flex';$('lerr2').textContent=t;}
+window.onerror=function(m){fatal('Hata: '+m);};
+var me=null,tok=null,cd=0,tPrev=Date.now(),cur=5,pen=false,fast=false,s=1,ox=0,oy=0,W,H,es=null;
+var cv=$('c'),g=cv.getContext('2d');
+var BASE='',offline=false,local={},FILE=location.protocol.indexOf('http')!==0;try{BASE=localStorage.getItem('srv')||'';}catch(e){}
+function U(p){return BASE?BASE+'/'+p:p;}
+function api(path,method,obj){
+  var h={'Content-Type':'application/json'};if(tok)h.Authorization='Bearer '+tok;
+  return fetch(U(path),{method:method||'GET',headers:h,body:obj?JSON.stringify(obj):undefined}).then(function(r){return r.json().then(function(j){j._s=r.status;return j;});});
+}
+function toast(t,ms){var b=$('bn');b.textContent=t;b.style.display='block';clearTimeout(toast.t);toast.t=setTimeout(function(){b.style.display='none'},ms||2500);}
+var ac=null;
+function ditt(){try{ac=ac||new(window.AudioContext||window.webkitAudioContext)();var oo=ac.createOscillator(),gg=ac.createGain();oo.type='square';oo.frequency.value=300;gg.gain.value=.15;oo.connect(gg);gg.connect(ac.destination);oo.start();oo.stop(ac.currentTime+.2);}catch(e){}}
+var lastW=0;
+function seaWarn(cx,cy){
+  var n=Date.now();if(n-lastW<1500)return;lastW=n;
+  var p=document.createElement('div');p.className='pop';p.textContent='❗';p.style.left=cx+'px';p.style.top=cy+'px';document.body.appendChild(p);setTimeout(function(){p.remove()},1200);
+  ditt();toast('❗ UYARI SADECE TOPRAK OLAN YERLERE KOYA BİLİRSİNİZ',2600);
+}
+function plusFx(n){var e=document.createElement('span');e.className='plus';e.textContent='+'+n;$('timer').appendChild(e);setTimeout(function(){e.remove()},950);}
+function setAdd(a,announce){if(a===ADD)return;ADD=a;ui();if(announce)toast((a<10?'⚡ Hızlı: ':'⏱️ Normal: ')+'piksel başı artık +'+a+' sn',2500);}
+function fit(){var r=devicePixelRatio||1;W=innerWidth;H=innerHeight;cv.width=W*r;cv.height=H*r;g.setTransform(r,0,0,r,0,0);draw();}
+function draw(){
+  g.fillStyle='#0b3a66';g.fillRect(0,0,W,H);
+  g.imageSmoothingEnabled=s<1.5;g.drawImage(o,ox,oy,NX*s,NY*s);
+  if(s>=10){g.strokeStyle='#0002';g.beginPath();var x0=Math.max(0,Math.floor(-ox/s)),x1=Math.min(NX,Math.ceil((W-ox)/s)),y0=Math.max(0,Math.floor(-oy/s)),y1=Math.min(NY,Math.ceil((H-oy)/s));
+    for(var k=x0;k<=x1;k++){g.moveTo(ox+k*s,oy+y0*s);g.lineTo(ox+k*s,oy+y1*s);}for(k=y0;k<=y1;k++){g.moveTo(ox+x0*s,oy+k*s);g.lineTo(ox+x1*s,oy+k*s);}g.stroke();}
+}
+var dirty=false;function rd(){if(!dirty){dirty=true;requestAnimationFrame(function(){dirty=false;draw();});}}
+function zoom(f,cx,cy){var n=Math.max(.12,Math.min(40,s*f));ox=cx-(cx-ox)*n/s;oy=cy-(cy-oy)*n/s;s=n;draw();}
+function setPx(x,y,v){og.fillStyle=cols[v-1];og.fillRect(x,y,1,1);}
+var lastCell=-1;
+function tryPlace(cx,cy){
+  if(!me)return;
+  var x=Math.floor((cx-ox)/s),y=Math.floor((cy-oy)/s);if(x<0||y<0||x>=NX||y>=NY)return;
+  var id=y*NX+x;
+  if(!isL[id]){seaWarn(cx,cy);return;}
+  if((pen||fast)&&id===lastCell)return;lastCell=id;
+  if(cd+ADD>MAX)return;
+  setPx(x,y,cur+1);cd+=ADD;plusFx(ADD);rd();ui();
+  if(offline){local[id]=cur+1;try{localStorage.setItem('pxo2',JSON.stringify(local));}catch(e){}return;}
+  api('api/pixel','POST',{x:x,y:y,c:cur}).then(function(j){
+    if(typeof j.cd==='number'){cd=j.cd;ui();}
+    if(typeof j.add==='number')setAdd(j.add,true);
+  }).catch(function(){});
+}
+function ui(){
+  if(!me)return;
+  var t=Math.ceil(cd);$('tm').textContent=Math.floor(t/60)+':'+('0'+t%60).slice(-2);
+  $('bar').style.width=(cd/MAX*100)+'%';$('rate').textContent='(+'+ADD+' sn)';$('info').textContent=me.name;
+}
+setInterval(function(){var n=Date.now();cd=Math.max(0,cd-(n-tPrev)/1000);tPrev=n;ui();},250);
+var P={},moved=false,holdT=0,px0=0,py0=0;
+function paintTo(x1,y1){var dx=x1-px0,dy=y1-py0,dd=Math.hypot(dx,dy),st=Math.min(80,Math.max(1,Math.ceil(dd/Math.max(1,s*.5))));for(var i=1;i<=st;i++)tryPlace(px0+dx*i/st,py0+dy*i/st);px0=x1;py0=y1;}
+function endHold(){clearTimeout(holdT);fast=false;}
+cv.addEventListener('pointerdown',function(e){
+  if(!me)return;cv.setPointerCapture(e.pointerId);P[e.pointerId]={x:e.clientX,y:e.clientY};moved=false;lastCell=-1;
+  if(Object.keys(P).length>1){endHold();return;}
+  px0=e.clientX;py0=e.clientY;
+  if(pen){tryPlace(e.clientX,e.clientY);return;}
+  clearTimeout(holdT);holdT=setTimeout(function(){if(!moved&&P[e.pointerId]&&Object.keys(P).length==1){fast=true;lastCell=-1;toast('⚡ Hızlı mod',1500);tryPlace(px0,py0);}},2500);
+});
+cv.addEventListener('pointermove',function(e){
+  var p=P[e.pointerId];if(!p)return;var ids=Object.keys(P);
+  if((pen||fast)&&ids.length==1){p.x=e.clientX;p.y=e.clientY;paintTo(e.clientX,e.clientY);return;}
+  if(ids.length==1){var dx=e.clientX-p.x,dy=e.clientY-p.y;if(moved||Math.abs(dx)+Math.abs(dy)>3){moved=true;ox+=dx;oy+=dy;p.x=e.clientX;p.y=e.clientY;draw();}}
+  else if(ids.length==2){moved=true;var q=P[ids[0]==e.pointerId?ids[1]:ids[0]];var d0=Math.hypot(p.x-q.x,p.y-q.y);p.x=e.clientX;p.y=e.clientY;var d1=Math.hypot(p.x-q.x,p.y-q.y);if(d0>0)zoom(d1/d0,(p.x+q.x)/2,(p.y+q.y)/2);}
+});
+cv.addEventListener('pointerup',function(e){var wasP=pen||fast;endHold();if(P[e.pointerId]&&!moved&&!wasP&&Object.keys(P).length==1)tryPlace(e.clientX,e.clientY);delete P[e.pointerId];});
+cv.addEventListener('pointercancel',function(e){endHold();delete P[e.pointerId];});
+cv.addEventListener('wheel',function(e){e.preventDefault();zoom(e.deltaY<0?1.15:.87,e.clientX,e.clientY);},{passive:false});
+$('zi').onclick=function(){zoom(1.4,W/2,H/2)};$('zo').onclick=function(){zoom(.71,W/2,H/2)};
+$('pen').onclick=function(){pen=!pen;this.className=pen?'on':'';};
+var pal=$('pal');cols.forEach(function(c,i){var b=document.createElement('b');b.style.background=c;if(i==cur)b.className='on';b.onclick=function(){cur=i;[].forEach.call(pal.children,function(x){x.className=''});b.className='on';};pal.appendChild(b);});
+function connect(){
+  if(es)return;es=new EventSource(U('api/events'));
+  es.onmessage=function(ev){var m=JSON.parse(ev.data);
+    if(m.t==='p'){setPx(m.x,m.y,m.v);rd();}else if(m.t==='a')setAdd(m.add,true);};
+}
+function start(){
+  api('api/init').then(function(j){
+    if(!j.me){$('login').style.display='flex';$('lerr').textContent='Hata';return;}
+    me=j.me;cd=me.cd;tPrev=Date.now();setAdd(j.add||10,false);$('login').style.display='none';ui();
+    fetch(U('api/map')).then(function(r){return r.arrayBuffer();}).then(function(b){var a=new Uint8Array(b);if(a.length!==NX*NY)return;for(var i=0;i<a.length;i++)if(a[i]){og.fillStyle=cols[a[i]-1];og.fillRect(i%NX,(i/NX)|0,1,1);}rd();connect();});
+  }).catch(function(){$('lerr').textContent='Sunucuya bağlanılamadı. Sunucu adresini yaz ya da çevrimdışı oyna';$('sv').style.display='block';$('bo').style.display='inline-block';$('sv').value=BASE;$('login').style.display='flex';});
+}
+function go(){
+  if(FILE||$('sv').value.trim()){var v=$('sv').value.trim().replace(/\/+$/,'');if(!v){$('lerr').textContent='Sunucu adresi yaz ya da çevrimdışı oyna';return;}if(!/^https?:\/\//.test(v))v='https://'+v;BASE=v;try{localStorage.setItem('srv',v);}catch(e){}}
+  start();
+}
+function startOffline(){
+  offline=true;me={name:'Misafir',cd:0};cd=0;$('login').style.display='none';
+  try{local=JSON.parse(localStorage.getItem('pxo2')||'{}');}catch(e){local={};}
+  for(var k in local){var i=+k;setPx(i%NX,(i/NX)|0,local[k]);}
+  var R=[2,5,10,10,10];(function rot(){setTimeout(function(){setAdd(R[Math.floor(Math.random()*R.length)],true);rot();},60000+Math.random()*120000);})();
+  ui();rd();toast('📴 Çevrimdışı mod: sadece sen çizersin',3500);
+}
+$('bo').onclick=startOffline;$('bl').onclick=go;
+try{tok=localStorage.getItem('did');}catch(e){}
+if(!tok){tok=Array.from(crypto.getRandomValues(new Uint8Array(16))).map(function(b){return(b%36).toString(36)}).join('');try{localStorage.setItem('did',tok);}catch(e){}}
+addEventListener('resize',fit);
+fit();s=Math.max(.12,W/NX*1.6);ox=-(-68.5+180)/360*NX*s+W/2;oy=-(90+53.5)/180*NY*s+H/2;
+setTimeout(function(){
+  if(typeof GEO==='undefined'){fatal('geo.js yüklenemedi.');return;}
+  genBase(function(){$('load').style.display='none';draw();
+    if(FILE){$('sv').value=BASE;if(BASE)start();else $('login').style.display='flex';}else start();});
+},30);
+</script>
+</body></html>
